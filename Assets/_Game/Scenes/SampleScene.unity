@@ -459,7 +459,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!70 &1540062615
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -511,6 +511,9 @@ MonoBehaviour:
   groundLayerMask:
     serializedVersion: 2
     m_Bits: 8
+  speed: 250
+  anim: {fileID: 1556291147}
+  jumpForce: 350
 --- !u!1 &1556291145
 GameObject:
   m_ObjectHideFlags: 0
@@ -523,7 +526,7 @@ GameObject:
   - component: {fileID: 1556291148}
   - component: {fileID: 1556291147}
   m_Layer: 0
-  m_Name: Square
+  m_Name: Anim
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
