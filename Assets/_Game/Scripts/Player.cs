@@ -14,6 +14,7 @@ public class Player : MonoBehaviour
     private bool isGrounded = true;
     private bool isJumping = false;
     private bool isAttack = false;
+    private bool isDeath = false;
 
     private int coin = 0;
     private float horizontal;
@@ -34,6 +35,10 @@ public class Player : MonoBehaviour
         //vertical = Input.GetAxisRaw("Vertical");
         //Debug.Log(CheckGrounded());
 
+        if (isDeath)
+        {
+            return;
+        }
         if (isAttack)
         {
             return;
@@ -155,6 +160,7 @@ public class Player : MonoBehaviour
         }
         if (collision.tag == "DeathZone")
         {
+            isDeath = true;
             ChangeAnim("die");
         }
     }
