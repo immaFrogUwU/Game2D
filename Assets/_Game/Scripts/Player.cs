@@ -1,14 +1,15 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class Player : MonoBehaviour
+public class Player : Character
 {
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private LayerMask groundLayerMask;
     [SerializeField] private float speed = 5;
-    [SerializeField] private Animator anim;
+
     [SerializeField] private float jumpForce = 350;
 
     private bool isGrounded = true;
@@ -18,12 +19,16 @@ public class Player : MonoBehaviour
 
     private int coin = 0;
     private float horizontal;
-    private string currentAnimName;
-    //private float vertical; 
+    
+
+    private Vector3 savePoint;     
+    //private float vertical;
     // Start is called before the first frame update
     void Start()
     {
-        
+        //first pos of player
+        SavePoint();
+         
     }
 
     // Update is called once per frame
@@ -97,6 +102,24 @@ public class Player : MonoBehaviour
             rb.velocity = Vector2.zero;
         }
     }
+    //Reset cac thong so ve Start
+    public override void OnInit()
+    {
+        base.OnInit();
+        isDeath = false;
+        isAttack = false;
+        isJumping = false;
+        transform.position = savePoint;
+        ChangeAnim("idle");
+    }
+    public override void OnDespawn()
+    {
+        base.OnDespawn();
+    }
+    protected override void OnDeath()
+    {
+        base.OnDeath();
+    }
     private bool CheckGrounded()
     {
         Debug.DrawLine(transform.position, transform.position + Vector3.down * 1.1f, Color.red);
@@ -141,15 +164,9 @@ public class Player : MonoBehaviour
         rb.AddForce(jumpForce * Vector2.up);
     }
 
-    private void ChangeAnim(string animName)
+    internal void SavePoint()
     {
-        if (currentAnimName != animName)
-        {
-            anim.ResetTrigger(animName);
-            currentAnimName = animName;
-            anim.SetTrigger(currentAnimName);
-        }
-       
+        savePoint = transform.position;
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -162,6 +179,9 @@ public class Player : MonoBehaviour
         {
             isDeath = true;
             ChangeAnim("die");
+            Invoke(nameof(OnInit), 1f);
         }
     }
+
+    
 }
