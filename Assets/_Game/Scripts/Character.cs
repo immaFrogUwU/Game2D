@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class Character : MonoBehaviour
 {
@@ -27,7 +28,8 @@ public class Character : MonoBehaviour
     }
     protected virtual void OnDeath()
     {
-
+        ChangeAnim("die");
+        Invoke(nameof(OnDespawn), 2f);
     }
     protected void ChangeAnim(string animName)
     {
@@ -39,7 +41,7 @@ public class Character : MonoBehaviour
         }
 
     }
-    public void OnInit(float damage)
+    public void OnHit(float damage)
     {
         if (!isDead)
         {
@@ -50,6 +52,6 @@ public class Character : MonoBehaviour
             }
         }
     }
-
+    
    
 }

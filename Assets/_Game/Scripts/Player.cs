@@ -9,8 +9,10 @@ public class Player : Character
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private LayerMask groundLayerMask;
     [SerializeField] private float speed = 5;
-
+    [SerializeField] private Kunai kunaiPrefab;
+    [SerializeField] private Transform throwPoint;
     [SerializeField] private float jumpForce = 350;
+    [SerializeField] private GameObject attackArea;
 
     private bool isGrounded = true;
     private bool isJumping = false;
@@ -24,12 +26,8 @@ public class Player : Character
     private Vector3 savePoint;     
     //private float vertical;
     // Start is called before the first frame update
-    void Start()
-    {
-        //first pos of player
-        SavePoint();
-         
-    }
+
+    //khong ghi start o Player trung Char
 
     // Update is called once per frame
     void FixedUpdate()
@@ -111,10 +109,12 @@ public class Player : Character
         isJumping = false;
         transform.position = savePoint;
         ChangeAnim("idle");
+        DeActiveAttack();
     }
     public override void OnDespawn()
     {
         base.OnDespawn();
+        OnInit();
     }
     protected override void OnDeath()
     {
@@ -143,6 +143,8 @@ public class Player : Character
         isAttack = true;
         rb.velocity = Vector2.zero; /// khóa lại vận tốc
         Invoke(nameof(ResetAttack), 0.5f);
+        ActiveAttack();
+        Invoke(nameof(DeActiveAttack), 0.5f);
     }
     private void Throw()
     {
@@ -150,7 +152,10 @@ public class Player : Character
         isAttack = true;
         rb.velocity = Vector2.zero; /// khóa lại vận tốc
         Invoke(nameof(ResetAttack), 0.5f);
+        //khoi tao
+        Instantiate(kunaiPrefab, throwPoint.position, throwPoint.rotation);
     }
+   
     private void ResetAttack()
     {
         isAttack = false;   
@@ -167,6 +172,15 @@ public class Player : Character
     internal void SavePoint()
     {
         savePoint = transform.position;
+    }
+    private void ActiveAttack()
+    {
+        //Ham nay de gay dame cho bot, vi tan cong thuong chua co dame
+        attackArea.SetActive(true);
+    }
+    private void DeActiveAttack()
+    {
+        attackArea.SetActive(false);
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
