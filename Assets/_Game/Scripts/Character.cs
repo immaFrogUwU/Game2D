@@ -7,7 +7,8 @@ using UnityEngine.UIElements;
 public class Character : MonoBehaviour
 {
     [SerializeField] private Animator anim;
-    private float hp;
+    [SerializeField] private HealthBar healthBar;
+    public float hp;
     public string currentAnimName;
 
     public bool isDead => hp <= 0;
@@ -20,6 +21,7 @@ public class Character : MonoBehaviour
     public virtual void OnInit()
     {
         hp = 100;
+        healthBar.OnInit(100, transform);
     }
     //ham huy
     public virtual void OnDespawn()
@@ -31,7 +33,7 @@ public class Character : MonoBehaviour
         ChangeAnim("die");
         Invoke(nameof(OnDespawn), 2f);
     }
-    protected void ChangeAnim(string animName)
+    internal virtual void ChangeAnim(string animName)
     {
         if (currentAnimName != animName)
         {
@@ -48,8 +50,10 @@ public class Character : MonoBehaviour
             hp -= damage;   //hp = hp - damage
             if (isDead)
             {
+                hp = 0;
                 OnDeath();
             }
+            healthBar.SetNewHp(hp);
         }
     }
     

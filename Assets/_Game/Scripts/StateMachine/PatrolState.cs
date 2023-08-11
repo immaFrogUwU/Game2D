@@ -9,6 +9,7 @@ public class PatrolState : IState
     float timer = 0;
     public void OnEnter(Enemy enemy)
     {
+        enemy.ChangeAnim("run");
         timer = 0;
         randomTime = Random.Range(3f, 6f);
     }
@@ -22,6 +23,7 @@ public class PatrolState : IState
             enemy.ChangeDirection(enemy.Target.transform.position.x < enemy.transform.position.x);
             if (enemy.IsTargetInRange())
             {
+                
                 enemy.ChangeState(new AttackState());
             }
             else

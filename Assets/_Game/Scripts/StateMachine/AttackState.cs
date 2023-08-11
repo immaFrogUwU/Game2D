@@ -14,6 +14,7 @@ public class AttackState : IState
             //enemy.StopMoving();
             enemy.Attack();
         }
+        
         timer = 0;
     }
     //update lien tuc

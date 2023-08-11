@@ -124,6 +124,4 @@ public class Enemy : Character
     {
         attackArea.SetActive(false);
     }
-
-
 }
