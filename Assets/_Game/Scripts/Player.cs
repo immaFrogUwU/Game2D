@@ -13,6 +13,7 @@ public class Player : Character
     [SerializeField] private Transform throwPoint;
     [SerializeField] private float jumpForce = 350;
     [SerializeField] private GameObject attackArea;
+    
 
     private bool isGrounded = true;
     private bool isJumping = false;
@@ -23,18 +24,27 @@ public class Player : Character
     private float horizontal;
     
 
-    private Vector3 savePoint;     
+    private Vector3 savePoint;
     //private float vertical;
     // Start is called before the first frame update
 
     //khong ghi start o Player trung Char
 
     // Update is called once per frame
-    void FixedUpdate()
+
+    //-----------------------------
+    //SAVE DATA CO BAN
+    //-----------------------------
+    private void Awake()
+    {
+        coin = PlayerPrefs.GetInt("coin", 0); 
+        //0 la gia tri mac dinh khi chua duoc khoi tao
+    }
+    void Update()
     {
         isGrounded = CheckGrounded();
         //hori = -1 khi sang trái, =0 im, = 1 sang phải
-        horizontal = Input.GetAxisRaw("Horizontal");
+        //horizontal = Input.GetAxisRaw("Horizontal");
         //vertical = Input.GetAxisRaw("Vertical");
         //Debug.Log(CheckGrounded());
 
@@ -52,7 +62,7 @@ public class Player : Character
             {
                 return;
             }
-            //Jump
+
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 Jump();
@@ -88,8 +98,9 @@ public class Player : Character
 
         //Moving
         if (Mathf.Abs(horizontal) > 0.1f)
+            //Time.deltaTime la 1 cai se update va thay doi lien tuc nen se bi luc nhanh luc cham 
         {
-            rb.velocity = new Vector2(horizontal * Time.fixedDeltaTime * speed, rb.velocity.y);
+            rb.velocity = new Vector2(horizontal * speed, rb.velocity.y);
             //Neu di sang phai thi khong quay, sang trai thi doi huong player
             transform.rotation = Quaternion.Euler(new Vector3(0, horizontal > 0 ? 0 : 180, 0));
         }
@@ -104,12 +115,13 @@ public class Player : Character
     public override void OnInit()
     {
         base.OnInit();
-        isDeath = false;
         isAttack = false;
-        isJumping = false;
         transform.position = savePoint;
         ChangeAnim("idle");
         DeActiveAttack();
+        SavePoint();
+        //khoi tao coin
+        UIManager.instance.SetCoin(coin);
     }
     public override void OnDespawn()
     {
@@ -137,7 +149,7 @@ public class Player : Character
         return hit.collider != null;
     }
     
-    private void Attack()
+    public void Attack()
     {
         ChangeAnim("attack");
         isAttack = true;
@@ -146,7 +158,7 @@ public class Player : Character
         ActiveAttack();
         Invoke(nameof(DeActiveAttack), 0.5f);
     }
-    private void Throw()
+    public void Throw()
     {
         ChangeAnim("throw");
         isAttack = true;
@@ -156,13 +168,13 @@ public class Player : Character
         Instantiate(kunaiPrefab, throwPoint.position, throwPoint.rotation);
     }
    
-    private void ResetAttack()
+    public void ResetAttack()
     {
         isAttack = false;   
         ChangeAnim("idle");
     }
 
-    private void Jump()
+    public void Jump()
     {
         isJumping = true;
         ChangeAnim("jump");
@@ -173,20 +185,35 @@ public class Player : Character
     {
         savePoint = transform.position;
     }
-    private void ActiveAttack()
+    public void ActiveAttack()
     {
         //Ham nay de gay dame cho bot, vi tan cong thuong chua co dame
         attackArea.SetActive(true);
     }
-    private void DeActiveAttack()
+    public void DeActiveAttack()
     {
         attackArea.SetActive(false);
     }
+    public void SetMove(float horizontal)
+    {
+        this.horizontal = horizontal;
+    }
+    //public void SetJump(bool jump)
+    //{
+    //    if (isJumping = jump)
+    //    {
+    //        Jump();
+    //        return;
+    //    }
+    //}
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.tag == "Coin")
         {
             coin++;
+            //khi tang tien thi save gia tri lai
+            PlayerPrefs.SetInt("coin", coin);   //key va value
+            UIManager.instance.SetCoin(coin);
             Destroy(collision.gameObject);
         }
         if (collision.tag == "DeathZone")
@@ -196,6 +223,7 @@ public class Player : Character
             Invoke(nameof(OnInit), 1f);
         }
     }
+    
 
     
 }

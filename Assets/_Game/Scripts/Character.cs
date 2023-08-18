@@ -8,10 +8,11 @@ public class Character : MonoBehaviour
 {
     [SerializeField] private Animator anim;
     [SerializeField] private HealthBar healthBar;
+    [SerializeField] protected CombatText combatTextPrefab;
     public float hp;
     public string currentAnimName;
 
-    public bool isDead => hp <= 0;
+    public bool isDead => hp <= 0.1f;
     private void Start()
     {
         OnInit();
@@ -26,12 +27,13 @@ public class Character : MonoBehaviour
     //ham huy
     public virtual void OnDespawn()
     {
-
+        OnInit();
     }
     protected virtual void OnDeath()
     {
-        ChangeAnim("die");
-        Invoke(nameof(OnDespawn), 2f);
+           ChangeAnim("die");
+           Invoke(nameof(OnDespawn), 1f);
+        
     }
     internal virtual void ChangeAnim(string animName)
     {
@@ -54,6 +56,8 @@ public class Character : MonoBehaviour
                 OnDeath();
             }
             healthBar.SetNewHp(hp);
+            Instantiate(combatTextPrefab, transform.position + Vector3.up, Quaternion.identity).OnInit(damage);
+            //1 prefab, 2 vi tri, 3 goc xoay identity mac dinh la goc xoay 0 0 0
         }
     }
     
