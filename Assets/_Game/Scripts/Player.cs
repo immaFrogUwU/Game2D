@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UIElements;
 
 public class Player : Character
@@ -13,7 +15,6 @@ public class Player : Character
     [SerializeField] private Transform throwPoint;
     [SerializeField] private float jumpForce = 350;
     [SerializeField] private GameObject attackArea;
-    
 
     private bool isGrounded = true;
     private bool isJumping = false;
@@ -37,7 +38,9 @@ public class Player : Character
     //-----------------------------
     private void Awake()
     {
-        coin = PlayerPrefs.GetInt("coin", 0); 
+
+        coin = PlayerPrefs.GetInt("coin", 0);
+        coin = 0;
         //0 la gia tri mac dinh khi chua duoc khoi tao
     }
     void Update()
@@ -60,21 +63,22 @@ public class Player : Character
         {
             if (isJumping)
             {
+
                 return;
             }
-
-            if (Input.GetKeyDown(KeyCode.Space))
+           
+            /*if (Input.GetKeyDown(KeyCode.Space))
             {
                 Jump();
                 return;
-            }
+            }*/
 
             if (Mathf.Abs(horizontal) > 0.1f)
             {
                 ChangeAnim("run");
             }
             //Attack
-            if (Input.GetKeyDown(KeyCode.C))
+            /*if (Input.GetKeyDown(KeyCode.C))
             {
                 Attack();
                 return;
@@ -85,7 +89,7 @@ public class Player : Character
             {
                 Throw();
                 return;
-            }
+            }*/
 
         }
 
@@ -114,23 +118,28 @@ public class Player : Character
     //Reset cac thong so ve Start
     public override void OnInit()
     {
-        base.OnInit();
+        
+        isDeath = false;
         isAttack = false;
+        base.OnInit();
+        anim.SetTrigger("idle");
         transform.position = savePoint;
-        ChangeAnim("idle");
+        
         DeActiveAttack();
         SavePoint();
         //khoi tao coin
         UIManager.instance.SetCoin(coin);
     }
     public override void OnDespawn()
-    {
+    {        
         base.OnDespawn();
         OnInit();
     }
     protected override void OnDeath()
     {
         base.OnDeath();
+        Invoke(nameof(OnDespawn), 1f);
+
     }
     private bool CheckGrounded()
     {
@@ -176,9 +185,13 @@ public class Player : Character
 
     public void Jump()
     {
-        isJumping = true;
-        ChangeAnim("jump");
-        rb.AddForce(jumpForce * Vector2.up);
+        if (rb.velocity.y == 0)
+        {
+            isJumping = true;
+            ChangeAnim("jump"); 
+            rb.AddForce(jumpForce * Vector2.up);
+        }
+      
     }
 
     internal void SavePoint()
@@ -198,14 +211,6 @@ public class Player : Character
     {
         this.horizontal = horizontal;
     }
-    //public void SetJump(bool jump)
-    //{
-    //    if (isJumping = jump)
-    //    {
-    //        Jump();
-    //        return;
-    //    }
-    //}
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.tag == "Coin")

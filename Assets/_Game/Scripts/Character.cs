@@ -6,10 +6,11 @@ using UnityEngine.UIElements;
 
 public class Character : MonoBehaviour
 {
-    [SerializeField] private Animator anim;
+    [SerializeField] public Animator anim;
     [SerializeField] private HealthBar healthBar;
     [SerializeField] protected CombatText combatTextPrefab;
     public float hp;
+    public float maxhp = 200;
     public string currentAnimName;
 
     public bool isDead => hp <= 0.1f;
@@ -21,22 +22,27 @@ public class Character : MonoBehaviour
     //ham khoi tao de chu dong goi khoi tao luc nao cung duoc
     public virtual void OnInit()
     {
+       
         hp = 100;
         healthBar.OnInit(100, transform);
+        healthBar.SetNewHp(hp);
     }
     //ham huy
     public virtual void OnDespawn()
     {
-        OnInit();
+        
     }
     protected virtual void OnDeath()
     {
-           ChangeAnim("die");
-           Invoke(nameof(OnDespawn), 1f);
+        
+        ChangeAnim("die");
+        Invoke(nameof(OnDespawn), 1f);
         
     }
     internal virtual void ChangeAnim(string animName)
     {
+        
+        
         if (currentAnimName != animName)
         {
             anim.ResetTrigger(animName);
@@ -50,6 +56,7 @@ public class Character : MonoBehaviour
         if (!isDead)
         {
             hp -= damage;   //hp = hp - damage
+                    
             if (isDead)
             {
                 hp = 0;
